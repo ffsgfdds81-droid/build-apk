@@ -1,0 +1,36 @@
+name: Build iOS with Kivy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install buildozer
+      run: |
+        pip install buildozer==1.5.0
+        pip install kivy==2.3.0
+    
+    - name: Build iOS
+      run: |
+        ls -la ios/
+        cd ios
+        buildozer ios debug
+    
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app
+        path: ios/bin/*.ipa
